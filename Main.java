@@ -1,4 +1,6 @@
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Scanner;
 
 class Main {
   public static class Gun {
@@ -11,9 +13,9 @@ class Main {
     public void set() {
       roundList.clear();
 
-      blanks = (int) Math.floor(Math.random() * 5) + 1;
-      lives = (int) Math.floor(Math.random() * Math.min(blanks, 8 - blanks)) + 1;
-      rounds = blanks + lives;
+      rounds = (int) Math.floor(Math.random() * 7) + 2;
+      blanks = (int) Math.ceil(rounds / 2);
+      lives = (int) Math.floor(rounds / 2);
 
       for (int i = 0; i < blanks; i++) {
         roundList.add(false);
@@ -28,7 +30,10 @@ class Main {
   public static void main(String[] args) {
     int healthP = 3;
     int healthD = 3;
+    Scanner input = new Scanner(System.in);
     boolean playerTurn;
+    // true is player, false is dealer
+    boolean firstShoot = false;
 
     // define the gun
     Gun gun = new Gun();
@@ -45,12 +50,40 @@ class Main {
       while (gun.roundList.size() > 0) {
         if (playerTurn) {
           // choose whom to shoot
+          for (int i = 0; i >= 0; i++) {
+            System.out.println("Choose whom to shoot first by inputting 'player' or 'dealer'.");
+            String choice = input.nextLine();
+            if (choice == "player") {
+              firstShoot = true;
+              break;
+            } else if (choice == "dealer") {
+              firstShoot = false;
+              break;
+            } else {
+              System.out.println("Invalid entry.");
+            }
+          }
 
           // update health & gun
+          if (gun.roundList.get(0) && firstShoot) {
+            System.out.println("BANG!\nPlayer was shot and loses 1 life.");
+            healthP--;
+          } else if (gun.roundList.get(0) && !firstShoot) {
+            System.out.println("BANG!\nDealer was shot and loses 1 life.");
+            healthD--;
+          } else if (!gun.roundList.get(0)) {
+            System.out.println("CLICK\nBlank fired.");
+          }
 
           // check if anyone died
+          if (healthD <= 0 || healthP <= 0)
+            break;
 
           // pass turn
+          if (gun.roundList.get(0) || !firstShoot)
+            playerTurn = false;
+          gun.roundList.remove(0);
+
         } else {
           // choose whom to shoot
 
@@ -61,10 +94,13 @@ class Main {
           // pass turn
         }
       }
+
+      // logic if player died
+
+      // logic if dealer died
+
     }
 
-    // logic if player died
-
-    // logic if dealer died
+    input.close();
   }
 }

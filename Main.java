@@ -33,7 +33,7 @@ class Main {
     Scanner input = new Scanner(System.in);
     boolean playerTurn;
     // true is player, false is dealer
-    boolean firstShoot = false;
+    boolean shootPlayer = false;
 
     // define the gun
     Gun gun = new Gun();
@@ -54,10 +54,10 @@ class Main {
             System.out.println("Choose whom to shoot first by inputting 'player' or 'dealer'.");
             String choice = input.nextLine();
             if (choice == "player") {
-              firstShoot = true;
+              shootPlayer = true;
               break;
             } else if (choice == "dealer") {
-              firstShoot = false;
+              shootPlayer = false;
               break;
             } else {
               System.out.println("Invalid entry.");
@@ -65,14 +65,14 @@ class Main {
           }
 
           // update health & gun
-          if (gun.roundList.get(0) && firstShoot) {
+          if (gun.roundList.get(0) && shootPlayer) {
             System.out.println("BANG!\nPlayer was shot and loses 1 life.");
             healthP--;
-          } else if (gun.roundList.get(0) && !firstShoot) {
+          } else if (gun.roundList.get(0) && !shootPlayer) {
             System.out.println("BANG!\nDealer was shot and loses 1 life.");
             healthD--;
           } else if (!gun.roundList.get(0)) {
-            System.out.println("CLICK\nBlank fired.");
+            System.out.println("*click*\nBlank fired.");
           }
 
           // check if anyone died
@@ -80,27 +80,49 @@ class Main {
             break;
 
           // pass turn
-          if (gun.roundList.get(0) || !firstShoot)
+          if (gun.roundList.get(0) || !shootPlayer)
             playerTurn = false;
           gun.roundList.remove(0);
 
         } else {
           // choose whom to shoot
+          if (gun.lives / gun.blanks >= 1) {
+            shootPlayer = true;
+          } else {
+            shootPlayer = false;
+          }
 
           // update health & gun
+          if (gun.roundList.get(0) && shootPlayer) {
+            System.out.println("BANG!\nPlayer was shot and loses 1 life.");
+            healthP--;
+          } else if (gun.roundList.get(0) && !shootPlayer) {
+            System.out.println("BANG!\nDealer was shot and loses 1 life.");
+            healthD--;
+          } else if (!gun.roundList.get(0)) {
+            System.out.println("*click*\nBlank fired.");
+          }
 
           // check if anyone died
+          if (healthD <= 0 || healthP <= 0)
+            break;
 
           // pass turn
+          if (gun.roundList.get(0) || !shootPlayer)
+            playerTurn = true;
+          gun.roundList.remove(0);
         }
       }
-
-      // logic if player died
-
-      // logic if dealer died
-
     }
 
+    // logic if player died
+    if (healthP == 0) {
+      System.out.println("WELCOME TO HELL ASSHOLE. NOW START SCREAMING");
+    }
+    // logic if dealer died
+    if (healthD == 0) {
+      System.out.println("PLAYER WINS!");
+    }
     input.close();
   }
 }
